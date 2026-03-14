@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>نتيجة الترم الأول - مركز الحبيب</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+body{
+font-family:Tahoma;
+background:linear-gradient(135deg,#667eea,#764ba2);
+}
+
+.card{
+background:white;
+border-radius:15px;
+padding:25px;
+box-shadow:0 10px 25px rgba(0,0,0,.1);
+}
+
+.grade-good{background:#16a34a;color:white}
+.grade-mid{background:#2563eb;color:white}
+.grade-low{background:#dc2626;color:white}
+
+</style>
+
+</head>
+
+<body class="min-h-screen p-6">
+
+<div class="max-w-xl mx-auto card">
+
+<h1 class="text-2xl font-bold text-center mb-6">
+مركز الحبيب للألحان والدراسات القبطية
+</h1>
+
+<form id="searchForm" class="space-y-4">
+
+<input
+id="studentCode"
+placeholder="ادخل كود الدارس"
+class="w-full border p-3 rounded text-center"
+/>
+
+<button
+class="w-full bg-blue-600 text-white p-3 rounded"
+>
+بحث
+</button>
+
+</form>
+
+<div id="error" class="hidden text-red-600 text-center mt-4"></div>
+
+</div>
+
+
+<div id="resultBox" class="hidden max-w-3xl mx-auto mt-6 card">
+
+<h2 class="text-xl font-bold mb-6 text-center">
+النتيجة
+</h2>
+
+
+<div class="grid grid-cols-2 gap-4 mb-6">
+
+<div>
+<span>الاسم</span>
+<p id="name"></p>
+</div>
+
+<div>
+<span>رقم الهاتف</span>
+<p id="phone"></p>
+</div>
+
+<div>
+<span>المرحلة</span>
+<p id="level"></p>
+</div>
+
+<div>
+<span>الفصل</span>
+<p id="class"></p>
+</div>
+
+</div>
+
+
+<h3 class="font-bold mb-4">التقديرات</h3>
+
+<div class="grid grid-cols-2 gap-4">
+
+<div class="p-3 bg-gray-100 rounded">
+الطقوس الكنسية
+<p id="liturgy"></p>
+</div>
+
+<div class="p-3 bg-gray-100 rounded">
+المحفوظات والأجبية
+<p id="memorized"></p>
+</div>
+
+<div class="p-3 bg-gray-100 rounded">
+اللغة القبطية
+<p id="coptic"></p>
+</div>
+
+<div class="p-3 bg-gray-100 rounded">
+الألحان والتسبحة
+<p id="hymns"></p>
+</div>
+
+</div>
+
+
+<div id="statusBox" class="mt-6 p-4 text-center rounded text-white"></div>
+
+</div>
+
+
+<script>
+
+const SHEET_URL="ضع رابط csv هنا";
+
+let students={};
+
+function parseCSV(text){
+
+const rows=text.split("\n");
+let data=[];
+
+rows.forEach(row=>{
+
+data.push(row.split(","))
+
+})
+
+return data
+
+}
+
+
+
+async function loadData(){
+
+const res=await fetch(SHEET_URL)
+const text=await res.text()
+
+const rows=parseCSV(text)
+
+for(let i=1;i<rows.length;i++){
+
+const r=rows[i]
+
+students[r[0]]={
+
+code:r[0],
+name:r[1],
+level:r[2],
+phone:r[3],
+class:r[4],
+
+grades:{
+liturgy:r[5],
+memorized:r[6],
+coptic:r[7],
+hymns:r[8]
+}
+
+}
+
+}
+
+}
+
+
+function checkStatus(grades){
+
+const values=Object.values(grades)
+
+if(values.includes("ضعيف")){
+
+return{
+
+text:"يحتاج مراجعة ودخول امتحان التخلفات",
+class:"grade-low"
+
+}
+
+}
+
+return{
+
+text:"ناجح ومنتقل للترم الثاني",
+class:"grade-good"
+
+}
+
+}
+
+
+document.getElementById("searchForm").addEventListener("submit",function(e){
+
+e.preventDefault()
+
+const code=document
+.getElementById("studentCode")
+.value
+.trim()
+
+const student=students[code]
+
+if(!student){
+
+document.getElementById("error").innerText="الكود غير موجود"
+document.getElementById("error").classList.remove("hidden")
+return
+
+}
+
+
+document.getElementById("error").classList.add("hidden")
+
+document.getElementById("resultBox").classList.remove("hidden")
+
+document.getElementById("name").innerText=student.name
+document.getElementById("phone").innerText=student.phone
+document.getElementById("level").innerText=student.level
+document.getElementById("class").innerText=student.class
+
+document.getElementById("liturgy").innerText=student.grades.liturgy
+document.getElementById("memorized").innerText=student.grades.memorized
+document.getElementById("coptic").innerText=student.grades.coptic
+document.getElementById("hymns").innerText=student.grades.hymns
+
+
+const status=checkStatus(student.grades)
+
+const box=document.getElementById("statusBox")
+
+box.innerText=status.text
+
+box.className="mt-6 p-4 text-center rounded text-white "+status.class
+
+})
+
+
+loadData()
+
+</script>
+
+</body>
+</html>
