@@ -1,259 +1,337 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتائج الطلاب - مركز الحبيب للألحان والدراسات القبطية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .result-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+        .grade-excellent { background: linear-gradient(135deg, #10b981, #059669); }
+        .grade-good { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .grade-pass { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .grade-fail { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
-<title>نتيجة الترم الأول - مركز الحبيب</title>
+        /* Spinner */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-<script src="https://cdn.tailwindcss.com"></script>
-
-<style>
-
-body{
-font-family:Tahoma;
-background:linear-gradient(135deg,#667eea,#764ba2);
-}
-
-.card{
-background:white;
-border-radius:15px;
-padding:25px;
-box-shadow:0 10px 25px rgba(0,0,0,.1);
-}
-
-.grade-good{background:#16a34a;color:white}
-.grade-mid{background:#2563eb;color:white}
-.grade-low{background:#dc2626;color:white}
-
-</style>
-
+        /* Print styles */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .gradient-bg { background: white !important; }
+            header { background: white !important; color: black !important; border-bottom: 2px solid #333 !important; }
+            header h1, header p { color: black !important; }
+            .result-card { background: white !important; box-shadow: none !important; border: 1px solid #ddd !important; }
+            .grade-excellent, .grade-good, .grade-pass, .grade-fail { background: #333 !important; color: white !important; }
+            #searchSection, #loadingSection { display: none !important; }
+            button { display: none !important; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #333; }
+            .print-date { display: block !important; text-align: left; font-size: 12px; color: #666; margin-top: 20px; }
+        }
+        .print-header, .print-date { display: none; }
+    </style>
 </head>
+<body class="min-h-screen gradient-bg">
+    <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div class="container mx-auto px-4 py-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">مركز الحبيب للألحان والدراسات القبطية</h1>
+            <p class="text-white/80 text-lg">نظام الاستعلام عن النتائج</p>
+        </div>
+    </header>
 
-<body class="min-h-screen p-6">
+    <main class="container mx-auto px-4 py-8">
+        <!-- Loading Section -->
+        <div id="loadingSection" class="max-w-md mx-auto mb-8">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 card-shadow text-center">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-gray-700 font-medium">جاري تحميل البيانات من الجدول...</p>
+            </div>
+        </div>
 
-<div class="max-w-xl mx-auto card">
+        <!-- Search Section -->
+        <div id="searchSection" class="hidden max-w-md mx-auto mb-8">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 card-shadow">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">الاستعلام عن النتيجة</h2>
+                <form id="searchForm" class="space-y-4">
+                    <div>
+                        <label for="studentCode" class="block text-sm font-medium text-gray-700 mb-2">كود الدارس</label>
+                        <input type="text" id="studentCode" name="studentCode" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-lg font-mono" 
+                               placeholder="أدخل كود الدارس" required>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300">البحث</button>
+                </form>
+                <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center"></div>
+                <div class="mt-4 text-center">
+                    <button id="refreshButton" class="text-blue-600 hover:text-blue-800 text-sm font-medium underline">تحديث البيانات من الجدول</button>
+                </div>
+            </div>
+        </div>
 
-<h1 class="text-2xl font-bold text-center mb-6">
-مركز الحبيب للألحان والدراسات القبطية
-</h1>
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden max-w-4xl mx-auto">
+            <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-6 md:p-8 card-shadow result-card">
 
-<form id="searchForm" class="space-y-4">
+                <!-- Print Header -->
+                <div class="print-header">
+                    <h1 class="text-2xl font-bold">مركز الحبيب للألحان والدراسات القبطية</h1>
+                    <p class="text-lg">شهادة نتائج الطالب</p>
+                </div>
 
-<input
-id="studentCode"
-placeholder="ادخل كود الدارس"
-class="w-full border p-3 rounded text-center"
-/>
+                <!-- Personal Info -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-blue-500 pb-2">البيانات الشخصية</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-sm text-gray-600">الاسم:</span>
+                            <p id="studentName" class="font-semibold text-lg text-gray-800"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-sm text-gray-600">رقم التليفون:</span>
+                            <p id="studentPhone" class="font-semibold text-lg text-gray-800"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-sm text-gray-600">المرحلة الدراسية:</span>
+                            <p id="studentLevel" class="font-semibold text-lg text-gray-800"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <span class="text-sm text-gray-600">الفصل داخل المركز:</span>
+                            <p id="studentClass" class="font-semibold text-lg text-gray-800"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg md:col-span-2">
+                            <span class="text-sm text-gray-600">كود الدارس:</span>
+                            <p id="displayStudentCode" class="font-semibold text-lg text-gray-800 font-mono"></p>
+                        </div>
+                    </div>
+                </div>
 
-<button
-class="w-full bg-blue-600 text-white p-3 rounded"
->
-بحث
-</button>
+                <!-- Grades Section -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-green-500 pb-2">النتائج التفصيلية</h3>
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg border-r-4 border-blue-500">
+                            <span class="text-sm text-gray-600">الطقوس الكنسية:</span>
+                            <p id="liturgyGrade" class="font-bold text-2xl text-blue-700"></p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border-r-4 border-green-500">
+                            <span class="text-sm text-gray-600">الألحان والتسبحة:</span>
+                            <p id="hymnsGrade" class="font-bold text-2xl text-green-700"></p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border-r-4 border-purple-500">
+                            <span class="text-sm text-gray-600">اللغة القبطية:</span>
+                            <p id="copticGrade" class="font-bold text-2xl text-purple-700"></p>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg border-r-4 border-orange-500">
+                            <span class="text-sm text-gray-600">المحفوظات والأجبية:</span>
+                            <p id="memorizedGrade" class="font-bold text-2xl text-orange-700"></p>
+                        </div>
+                    </div>
+                </div>
 
-</form>
+                <!-- Final Result -->
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-yellow-500 pb-2">النتيجة النهائية</h3>
+                    <div class="p-6 rounded-lg text-center text-white" id="statusCard">
+                        <span class="text-sm block mb-2 opacity-90">النتيجة النهائية</span>
+                        <p id="studentStatus" class="font-bold text-2xl"></p>
+                    </div>
+                </div>
 
-<div id="error" class="hidden text-red-600 text-center mt-4"></div>
+                <!-- Print Date -->
+                <div class="print-date">
+                    <p>تاريخ الطباعة: <span id="printDate"></span></p>
+                </div>
 
-</div>
-
-
-<div id="resultBox" class="hidden max-w-3xl mx-auto mt-6 card">
-
-<h2 class="text-xl font-bold mb-6 text-center">
-النتيجة
-</h2>
-
-
-<div class="grid grid-cols-2 gap-4 mb-6">
-
-<div>
-<span>الاسم</span>
-<p id="name"></p>
-</div>
-
-<div>
-<span>رقم الهاتف</span>
-<p id="phone"></p>
-</div>
-
-<div>
-<span>المرحلة</span>
-<p id="level"></p>
-</div>
-
-<div>
-<span>الفصل</span>
-<p id="class"></p>
-</div>
-
-</div>
-
-
-<h3 class="font-bold mb-4">التقديرات</h3>
-
-<div class="grid grid-cols-2 gap-4">
-
-<div class="p-3 bg-gray-100 rounded">
-الطقوس الكنسية
-<p id="liturgy"></p>
-</div>
-
-<div class="p-3 bg-gray-100 rounded">
-المحفوظات والأجبية
-<p id="memorized"></p>
-</div>
-
-<div class="p-3 bg-gray-100 rounded">
-اللغة القبطية
-<p id="coptic"></p>
-</div>
-
-<div class="p-3 bg-gray-100 rounded">
-الألحان والتسبحة
-<p id="hymns"></p>
-</div>
-
-</div>
-
-
-<div id="statusBox" class="mt-6 p-4 text-center rounded text-white"></div>
-
-</div>
-
+                <!-- Action Buttons -->
+                <div class="mt-8 text-center space-y-4 md:space-y-0 md:space-x-4 md:flex md:justify-center">
+                    <button id="printButton" class="w-full md:w-auto bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300">طباعة</button>
+                    <button id="backButton" class="w-full md:w-auto bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-gray-700 hover:to-gray-800 transition-all duration-300">بحث آخر</button>
+                </div>
+            </div>
+        </div>
+    </main>
 
 <script>
+/* ---------- إعدادات Google Sheets ---------- */
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=763792200&single=true&output=csv";
+let studentsData = {};
 
-const SHEET_URL="ضع رابط csv هنا";
+/* ---------- الحد الأقصى لكل مادة (يمكن تغييره حسب الجدول) ---------- */
+const MAX_GRADES = {
+    liturgy: 100,
+    hymns: 100,
+    coptic: 100,
+    memorized: 100
+};
 
-let students={};
+/* ---------- عناصر الصفحة ---------- */
+const searchForm = document.getElementById('searchForm');
+const searchSection = document.getElementById('searchSection');
+const resultsSection = document.getElementById('resultsSection');
+const loadingSection = document.getElementById('loadingSection');
+const errorMessage = document.getElementById('errorMessage');
+const backButton = document.getElementById('backButton');
+const refreshButton = document.getElementById('refreshButton');
 
-function parseCSV(text){
+/* ---------- دوال المساعدة ---------- */
 
-const rows=text.split("\n");
-let data=[];
-
-rows.forEach(row=>{
-
-data.push(row.split(","))
-
-})
-
-return data
-
+// تحويل الدرجة الرقمية إلى تقدير نصي
+function gradeText(score, maxScore) {
+    const percent = (score / maxScore) * 100;
+    if (percent >= 85) return 'ممتاز';
+    if (percent >= 75) return 'جيد جداً';
+    if (percent >= 50) return 'جيد';
+    return 'ضعيف';
 }
 
+// تحويل كل مادة إلى تقدير نصي وتحديد النتيجة النهائية
+function calculateTextResults(grades) {
+    const liturgyText = gradeText(grades.liturgy, MAX_GRADES.liturgy);
+    const hymnsText = gradeText(grades.hymns, MAX_GRADES.hymns);
+    const copticText = gradeText(grades.coptic, MAX_GRADES.coptic);
+    const memorizedText = gradeText(grades.memorized, MAX_GRADES.memorized);
 
+    const subjects = [liturgyText, hymnsText, copticText, memorizedText];
+    let finalStatus = 'ممتاز';
+    if (subjects.includes('ضعيف')) finalStatus = 'ضعيف';
+    else if (subjects.includes('جيد')) finalStatus = 'جيد';
+    else if (subjects.includes('جيد جداً')) finalStatus = 'جيد جداً';
 
-async function loadData(){
-
-const res=await fetch(SHEET_URL)
-const text=await res.text()
-
-const rows=parseCSV(text)
-
-for(let i=1;i<rows.length;i++){
-
-const r=rows[i]
-
-students[r[0]]={
-
-code:r[0],
-name:r[1],
-level:r[2],
-phone:r[3],
-class:r[4],
-
-grades:{
-liturgy:r[5],
-memorized:r[6],
-coptic:r[7],
-hymns:r[8]
+    return { liturgyText, hymnsText, copticText, memorizedText, finalStatus };
 }
 
+/* ---------- عرض النتائج ---------- */
+function displayTextResults(student) {
+    const results = calculateTextResults(student.grades);
+
+    // بيانات شخصية
+    document.getElementById('studentName').textContent = student.name;
+    document.getElementById('studentPhone').textContent = student.phone;
+    document.getElementById('studentLevel').textContent = student.level;
+    document.getElementById('studentClass').textContent = student.class;
+    document.getElementById('displayStudentCode').textContent = student.code;
+
+    // عرض التقديرات النصية
+    document.getElementById('liturgyGrade').textContent = results.liturgyText;
+    document.getElementById('hymnsGrade').textContent = results.hymnsText;
+    document.getElementById('copticGrade').textContent = results.copticText;
+    document.getElementById('memorizedGrade').textContent = results.memorizedText;
+
+    // النتيجة النهائية
+    document.getElementById('studentStatus').textContent = results.finalStatus;
+
+    // تغيير لون البطاقة حسب التقدير
+    const statusCard = document.getElementById('statusCard');
+    statusCard.className = `p-6 rounded-lg text-center text-white ${
+        results.finalStatus === 'ممتاز' ? 'grade-excellent' :
+        results.finalStatus === 'جيد جداً' ? 'grade-good' :
+        results.finalStatus === 'جيد' ? 'grade-pass' :
+        'grade-fail'
+    }`;
+
+    searchSection.classList.add('hidden');
+    resultsSection.classList.remove('hidden');
+    errorMessage.classList.add('hidden');
 }
 
+/* ---------- جلب البيانات من Google Sheets ---------- */
+async function fetchStudentsData() {
+    try {
+        const response = await fetch(SHEET_URL);
+        const text = await response.text();
+        const rows = text.split('\n').map(r => r.trim()).filter(r => r);
+
+        studentsData = {};
+
+        for (let i = 1; i < rows.length; i++) {
+            const cols = rows[i].split(',').map(c => c.replace(/"/g,'').trim());
+            if (cols.length >= 9) {
+                const code = cols[0];
+                studentsData[code] = {
+                    code,
+                    name: cols[1] || '',
+                    level: cols[2] || '',
+                    phone: cols[3] || '',
+                    class: cols[4] || '',
+                    grades: {
+                        liturgy: parseFloat(cols[5]) || 0,
+                        memorized: parseFloat(cols[6]) || 0,
+                        coptic: parseFloat(cols[7]) || 0,
+                        hymns: parseFloat(cols[8]) || 0
+                    }
+                };
+            }
+        }
+
+        return Object.keys(studentsData).length > 0;
+    } catch(e) {
+        console.error(e);
+        return false;
+    }
 }
 
-}
+/* ---------- أحداث الصفحة ---------- */
+window.addEventListener('load', async () => {
+    const success = await fetchStudentsData();
+    loadingSection.classList.add('hidden');
+    searchSection.classList.remove('hidden');
+    if (!success) {
+        errorMessage.textContent = 'فشل تحميل البيانات. تحقق من مشاركة الجدول واضغط "تحديث البيانات".';
+        errorMessage.classList.remove('hidden');
+    }
+});
 
+searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const code = document.getElementById('studentCode').value.trim();
+    if (studentsData[code]) displayTextResults(studentsData[code]);
+    else {
+        errorMessage.textContent = 'كود الدارس غير موجود.';
+        errorMessage.classList.remove('hidden');
+    }
+});
 
-function checkStatus(grades){
+refreshButton.addEventListener('click', async () => {
+    refreshButton.textContent = 'جاري التحديث...';
+    refreshButton.disabled = true;
+    const success = await fetchStudentsData();
+    refreshButton.textContent = 'تحديث البيانات من الجدول';
+    refreshButton.disabled = false;
+    if (success) {
+        errorMessage.textContent = 'تم تحديث البيانات بنجاح!';
+        errorMessage.className = 'mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-center';
+        setTimeout(()=> errorMessage.classList.add('hidden'), 3000);
+    } else {
+        errorMessage.textContent = 'فشل التحديث.';
+        errorMessage.className = 'mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center';
+    }
+});
 
-const values=Object.values(grades)
-
-if(values.includes("ضعيف")){
-
-return{
-
-text:"يحتاج مراجعة ودخول امتحان التخلفات",
-class:"grade-low"
-
-}
-
-}
-
-return{
-
-text:"ناجح ومنتقل للترم الثاني",
-class:"grade-good"
-
-}
-
-}
-
-
-document.getElementById("searchForm").addEventListener("submit",function(e){
-
-e.preventDefault()
-
-const code=document
-.getElementById("studentCode")
-.value
-.trim()
-
-const student=students[code]
-
-if(!student){
-
-document.getElementById("error").innerText="الكود غير موجود"
-document.getElementById("error").classList.remove("hidden")
-return
-
-}
-
-
-document.getElementById("error").classList.add("hidden")
-
-document.getElementById("resultBox").classList.remove("hidden")
-
-document.getElementById("name").innerText=student.name
-document.getElementById("phone").innerText=student.phone
-document.getElementById("level").innerText=student.level
-document.getElementById("class").innerText=student.class
-
-document.getElementById("liturgy").innerText=student.grades.liturgy
-document.getElementById("memorized").innerText=student.grades.memorized
-document.getElementById("coptic").innerText=student.grades.coptic
-document.getElementById("hymns").innerText=student.grades.hymns
-
-
-const status=checkStatus(student.grades)
-
-const box=document.getElementById("statusBox")
-
-box.innerText=status.text
-
-box.className="mt-6 p-4 text-center rounded text-white "+status.class
-
-})
-
-
-loadData()
-
-</script>
-
-</body>
-</html>
+backButton.addEventListener('click', () => {
+    searchSection.classList.remove('hidden');
+    resultsSection.classList.add('hidden');
+   
