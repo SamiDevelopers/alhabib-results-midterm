@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام نتائج الطلاب</title><!-- SDK -->
+  <title>نتائج مركز الحبيب للألحان والدراسات القبطية</title><!-- SDK -->
   <script src="/_sdk/element_sdk.js"></script><!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script><!-- Google Font - Noto Kufi Arabic for elegant Arabic typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,16 +15,16 @@
        المتغيرات الأساسية للتصميم
        ============================== */
     :root {
-      --bg:        #f8fafc;
-      --surface:   #ffffff;
-      --card:      #f0f9ff;
-      --accent:    #667eea;
-      --accent2:   #764ba2;
-      --text:      #1e293b;
-      --text-muted:#64748b;
-      --success:   #10b981;
-      --danger:    #ef4444;
-      --border:    rgba(15,23,42,0.06);
+      --bg:        #0f1b2d;
+      --surface:   #162236;
+      --card:      #1e3050;
+      --accent:    #c8922a;
+      --accent2:   #e8b84b;
+      --text:      #e8dcc8;
+      --text-muted:#8a9bb8;
+      --success:   #3ddc97;
+      --danger:    #e05c5c;
+      --border:    rgba(200,146,42,0.25);
     }
 
     /* ==============================
@@ -53,8 +53,8 @@
        ============================== */
     .page-bg {
       background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(102,126,234,0.08), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(118,75,162,0.06), transparent),
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(200,146,42,0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(61,220,151,0.05), transparent),
         var(--bg);
       min-height: 100%;
     }
@@ -67,8 +67,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(200,146,42,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,146,42,0.04) 1px, transparent 1px);
       background-size: 50px 50px;
       pointer-events: none;
       z-index: 0;
@@ -88,7 +88,7 @@
        شريط الرأس الذهبي
        ============================== */
     .header-bar {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+      background: linear-gradient(135deg, #1a2d4a 0%, #1e3050 50%, #162236 100%);
       border-bottom: 2px solid var(--accent);
       border-radius: 20px 20px 0 0;
       position: relative;
@@ -100,15 +100,15 @@
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, #764ba2, #667eea, #764ba2, transparent);
+      background: linear-gradient(90deg, transparent, var(--accent2), var(--accent), var(--accent2), transparent);
     }
 
     /* ==============================
        الحقول والـ Dropdown
        ============================== */
     .form-input {
-      background: rgba(255,255,255,0.95);
-      border: 1.5px solid rgba(102,126,234,0.2);
+      background: rgba(15,27,45,0.8);
+      border: 1.5px solid rgba(200,146,42,0.3);
       border-radius: 12px;
       color: var(--text);
       font-family: 'Noto Kufi Arabic', sans-serif;
@@ -121,12 +121,12 @@
 
     .form-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
-      background: rgba(255,255,255,1);
+      box-shadow: 0 0 0 3px rgba(200,146,42,0.15);
+      background: rgba(15,27,45,0.95);
     }
 
     .form-input option {
-      background: #ffffff;
+      background: #1e3050;
       color: var(--text);
     }
 
@@ -134,8 +134,8 @@
        زر البحث
        ============================== */
     .search-btn {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0f1b2d;
       font-family: 'Noto Kufi Arabic', sans-serif;
       font-weight: 700;
       font-size: 16px;
@@ -144,7 +144,7 @@
       padding: 13px 32px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(102,126,234,0.35);
+      box-shadow: 0 4px 20px rgba(200,146,42,0.35);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -153,7 +153,7 @@
 
     .search-btn:hover:not(:disabled) {
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(102,126,234,0.5);
+      box-shadow: 0 8px 30px rgba(200,146,42,0.5);
       filter: brightness(1.08);
     }
 
@@ -190,9 +190,9 @@
     .spinner-ring {
       width: 70px;
       height: 70px;
-      border: 4px solid rgba(102,126,234,0.15);
-      border-top: 4px solid #667eea;
-      border-right: 4px solid #764ba2;
+      border: 4px solid rgba(200,146,42,0.15);
+      border-top: 4px solid var(--accent);
+      border-right: 4px solid var(--accent2);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -231,12 +231,12 @@
       letter-spacing: 0.5px;
     }
 
-    .grade-excellent  { background: rgba(16,185,129,0.15); color: #059669; border: 1px solid rgba(16,185,129,0.4); }
-    .grade-very-good  { background: rgba(59,130,246,0.15); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.4); }
-    .grade-good       { background: rgba(102,126,234,0.15); color: #667eea; border: 1px solid rgba(102,126,234,0.4); }
-    .grade-pass       { background: rgba(245,158,11,0.15); color: #d97706; border: 1px solid rgba(245,158,11,0.4); }
-    .grade-fail       { background: rgba(239,68,68,0.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,0.4); }
-    .grade-na         { background: rgba(100,116,139,0.1); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.3); }
+    .grade-excellent  { background: rgba(61,220,151,0.15); color: #3ddc97; border: 1px solid rgba(61,220,151,0.4); }
+    .grade-very-good  { background: rgba(100,180,255,0.15); color: #64b4ff; border: 1px solid rgba(100,180,255,0.4); }
+    .grade-good       { background: rgba(200,146,42,0.2);  color: var(--accent2); border: 1px solid rgba(200,146,42,0.5); }
+    .grade-pass       { background: rgba(255,180,80,0.15); color: #ffb450; border: 1px solid rgba(255,180,80,0.4); }
+    .grade-fail       { background: rgba(224,92,92,0.15);  color: var(--danger);  border: 1px solid rgba(224,92,92,0.4); }
+    .grade-na         { background: rgba(138,155,184,0.1); color: var(--text-muted); border: 1px solid rgba(138,155,184,0.3); }
 
     /* ==============================
        رسالة الخطأ / النجاح
@@ -250,8 +250,8 @@
       font-size: 15px;
     }
 
-    .alert-error   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.4); color: #dc2626; }
-    .alert-warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.4); color: #d97706; }
+    .alert-error   { background: rgba(224,92,92,0.12); border: 1px solid rgba(224,92,92,0.4); color: #f08080; }
+    .alert-warning { background: rgba(255,180,80,0.12); border: 1px solid rgba(255,180,80,0.4); color: #ffb450; }
 
     /* ==============================
        معلومات الطالب الشخصية
@@ -261,9 +261,9 @@
       align-items: center;
       gap: 10px;
       padding: 10px 14px;
-      background: rgba(102,126,234,0.05);
+      background: rgba(15,27,45,0.5);
       border-radius: 10px;
-      border: 1px solid rgba(102,126,234,0.12);
+      border: 1px solid rgba(200,146,42,0.12);
     }
 
     .info-label {
@@ -291,7 +291,7 @@
        شريط النتيجة النهائية
        ============================== */
     .final-result-bar {
-      background: linear-gradient(135deg, rgba(240,249,255,0.8), rgba(240,245,250,0.8));
+      background: linear-gradient(135deg, rgba(30,48,80,0.8), rgba(22,34,54,0.8));
       border: 1px solid var(--accent);
       border-radius: 16px;
       padding: 20px 24px;
@@ -310,7 +310,7 @@
       top: 0; left: 0;
       width: 4px;
       height: 100%;
-      background: linear-gradient(to bottom, #764ba2, #667eea);
+      background: linear-gradient(to bottom, var(--accent2), var(--accent));
     }
 
     /* ==============================
@@ -348,9 +348,9 @@
        Tooltip للـ مرحلة الطالب
        ============================== */
     .stage-badge {
-      background: rgba(102,126,234,0.18);
-      color: #667eea;
-      border: 1px solid rgba(102,126,234,0.4);
+      background: rgba(200,146,42,0.18);
+      color: var(--accent2);
+      border: 1px solid rgba(200,146,42,0.4);
       border-radius: 8px;
       padding: 2px 10px;
       font-size: 12px;
@@ -363,7 +363,7 @@
     .gold-divider {
       border: none;
       height: 1px;
-      background: linear-gradient(90deg, transparent, #667eea, transparent);
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
       margin: 20px 0;
     }
 
@@ -378,7 +378,7 @@
     }
 
     .status-online  { background: var(--success); box-shadow: 0 0 6px var(--success); }
-    .status-loading { background: #667eea;  box-shadow: 0 0 6px #667eea; animation: pulse 1s infinite; }
+    .status-loading { background: var(--accent);  box-shadow: 0 0 6px var(--accent); animation: pulse 1s infinite; }
     .status-error   { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
 
     @keyframes pulse {
@@ -400,8 +400,7 @@
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body>
-  <!-- ==============================
+ <body><!-- ==============================
      شاشة التحميل الأولية
      ============================== -->
   <div class="loading-overlay" id="loadingOverlay">
@@ -418,27 +417,22 @@
       <!-- ==============================
            بطاقة التطبيق الرئيسية
            ============================== -->
-  <div class="main-card">
-   <!-- رأس الصفحة -->
+  <div class="main-card"><!-- رأس الصفحة -->
    <div class="header-bar px-6 py-8 text-center">
     <div class="cross-icon mb-3">
      ☩
     </div>
-    <h1 id="center-name-el" style="font-size:26px; font-weight:800; color: var(--accent2); letter-spacing:0.5px; line-height:1.4;">المركز التعليمي</h1>
+    <h1 id="center-name-el" style="font-size:26px; font-weight:800; color: var(--accent2); letter-spacing:0.5px; line-height:1.4;">مركز الحبيب للألحان والدراسات القبطية</h1>
     <p id="center-subtitle-el" style="color: var(--text-muted); font-size:14px; margin-top:6px;">نظام الاستعلام عن نتائج الدارسين</p><!-- مؤشر حالة الاتصال -->
-    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px;">
-     <span class="status-dot status-loading" id="statusDot"></span> <span style="font-size:12px; color: var(--text-muted);" id="statusText">جاري تحميل البيانات...</span>
+    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px;"><span class="status-dot status-loading" id="statusDot"></span> <span style="font-size:12px; color: var(--text-muted);" id="statusText">جاري تحميل البيانات...</span>
     </div>
    </div><!-- ==============================
              نموذج البحث
              ============================== -->
-   <div class="px-6 py-7">
-    <!-- اختيار نوع الامتحان -->
-    <div class="mb-5">
-     <label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="examSelect"> <i data-lucide="book-open" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> نوع الامتحان </label> <select class="form-input" id="examSelect"> <option value="midterm1">📋 نتيجة الميد ترم – الترم الأول – أكتوبر 2025</option> <option value="term1">📄 نتيجة الترم الأول – ديسمبر 2025</option> <option value="midterm2">📋 نتيجة الميد ترم – الترم الثاني – مارس 2026</option> <option value="term2">📄 نتيجة الترم الثاني – مايو 2026</option> </select>
+   <div class="px-6 py-7"><!-- اختيار نوع الامتحان -->
+    <div class="mb-5"><label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="examSelect"> <i data-lucide="book-open" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> نوع الامتحان </label> <select class="form-input" id="examSelect"> <option value="midterm1">📋 نتيجة الميد ترم – الترم الأول – أكتوبر 2025</option> <option value="term1">📄 نتيجة الترم الأول – ديسمبر 2025</option> <option value="midterm2">📋 نتيجة الميد ترم – الترم الثاني – مارس 2026</option> <option value="term2">📄 نتيجة الترم الثاني – مايو 2026</option> </select>
     </div><!-- إدخال كود الطالب -->
-    <div class="mb-6">
-     <label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="studentCode"> <i data-lucide="id-card" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> كود الدارس </label> <input class="form-input" type="text" id="studentCode" placeholder="أدخل كود الدارس (مثال: OQ37UN53)" autocomplete="off" spellcheck="false" style="text-transform: uppercase; letter-spacing: 1px;">
+    <div class="mb-6"><label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="studentCode"> <i data-lucide="id-card" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> كود الدارس </label> <input class="form-input" type="text" id="studentCode" placeholder="أدخل كود الدارس " autocomplete="off" spellcheck="false" style="text-transform: uppercase; letter-spacing: 1px;">
      <p style="font-size:12px; color: var(--text-muted); margin-top:6px; padding-right:4px;">أدخل الكود الموجود في بطاقة الدارس بالأحرف الكبيرة</p>
     </div><!-- زر البحث --> <button class="search-btn w-full" id="searchBtn" onclick="handleSearch()"> <i data-lucide="search" style="width:18px; height:18px;"></i> <span id="search-btn-text">عرض النتيجة</span> </button> <!-- منطقة رسائل الخطأ / النتائج -->
     <div id="resultArea" class="mt-6"></div>
@@ -455,7 +449,8 @@
    ██║  ██║██╔══██║   ██║   ██╔══██║
    ██████╔╝██║  ██║   ██║   ██║  ██║
    ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
-   نظام نتائج الدارسين - المركز التعليمي
+   نظام نتائج الدارسين - مركز الحبيب للألحان والدراسات القبطية
+
    ================================================================ */
 
 /* ================================================================
@@ -466,7 +461,7 @@
    ================================================================ */
 const SHEET_URLS = {
   midterm1: 'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=0',
-  term1:    'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=1',
+  term1:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRb7PP0zGljjefa771H0xVC4N_NGhas0IcWMcIOyNkFZgqR04ueeJVykUS-HQyT-y0azdCZI6AiQPro/pub?gid=1837227441&single=true&output=csv',
   midterm2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=763792200&single=true&output=csv',
   term2:    'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=3',
 };
@@ -994,7 +989,7 @@ window.elementSdk && window.elementSdk.init({
       accent_color:     '#c8922a',
       muted_color:      '#8a9bb8',
       font_family:      'Noto Kufi Arabic',
-      font_size:        15,
+      font_size:        20,
     };
     return {
       recolorables: [
@@ -1033,7 +1028,7 @@ window.elementSdk && window.elementSdk.init({
 
   /* ربط قيم لوحة التحرير بمفاتيح الـ config */
   mapToEditPanelValues: (config) => new Map([
-    ['center_name',        config.center_name        || 'المركز التعليمي'],
+    ['center_name',        config.center_name        || ' مركز الحبيب للألحان والدراسات القبطية'],
     ['center_subtitle',    config.center_subtitle    || 'نظام الاستعلام عن نتائج الدارسين'],
     ['search_button_text', config.search_button_text || 'عرض النتيجة'],
   ]),
@@ -1047,5 +1042,5 @@ loadAllData();
 /* تهيئة أيقونات Lucide */
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcd4424858b2d58',t:'MTc3MzU5NjAzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcd31e5915b2d58',t:'MTc3MzU5NTI5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
