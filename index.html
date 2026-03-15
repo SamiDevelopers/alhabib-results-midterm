@@ -515,7 +515,8 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
   <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
- <body><!-- Loading Screen -->
+ <body>
+  <!-- Loading Screen -->
   <div id="loadingScreen" class="loading-screen">
    <div>
     <div class="spinner"></div>
@@ -524,16 +525,19 @@
     </div>
    </div>
   </div>
-  <div class="container"><!-- Header -->
+  <div class="container">
+   <!-- Header -->
    <header>
     <h1>🎓 نظام عرض النتائج</h1>
     <p>مركز الحبيب للألحان والدراسات القبطية</p>
    </header><!-- Search Section -->
    <div class="search-card">
     <div class="form-row">
-     <div class="form-group"><label for="examType">نوع الامتحان</label> <select id="examType"> <option value="">-- اختر نوع الامتحان --</option> <option value="midterm1">نتيجة الميد ترم - الترم الأول - أكتوبر 2025</option> <option value="term1">نتيجة الترم الأول - ديسمبر 2025</option> <option value="midterm2">نتيجة الميد ترم - الترم الثاني - مارس 2026</option> <option value="term2">نتيجة الترم الثاني - مايو 2026</option> </select>
+     <div class="form-group">
+      <label for="examType">نوع الامتحان</label> <select id="examType"> <option value="">-- اختر نوع الامتحان --</option> <option value="midterm1">نتيجة الميد ترم - الترم الأول - أكتوبر 2025</option> <option value="term1">نتيجة الترم الأول - ديسمبر 2025</option> <option value="midterm2">نتيجة الميد ترم - الترم الثاني - مارس 2026</option> <option value="term2">نتيجة الترم الثاني - مايو 2026</option> </select>
      </div>
-     <div class="form-group"><label for="studentCode">كود الطالب</label> <input type="text" id="studentCode" placeholder="أدخل كود الطالب" autocomplete="off">
+     <div class="form-group">
+      <label for="studentCode">كود الطالب</label> <input type="text" id="studentCode" placeholder="أدخل كود الطالب" autocomplete="off">
      </div>
     </div><button class="btn-search" onclick="searchStudent()">🔍 عرض النتيجة</button>
    </div><!-- Error Message -->
@@ -541,22 +545,28 @@
     <h3>⚠️ خطأ</h3>
     <p id="errorText"></p>
    </div><!-- Result Container -->
-   <div id="resultContainer" class="result-container"><!-- Student Information -->
+   <div id="resultContainer" class="result-container">
+    <!-- Student Information -->
     <div class="student-info">
      <div class="info-row">
-      <div class="info-item"><span class="info-label">كود الطالب:</span> <span class="info-value" id="resultStudentCode">-</span>
+      <div class="info-item">
+       <span class="info-label">كود الطالب:</span> <span class="info-value" id="resultStudentCode">-</span>
       </div>
-      <div class="info-item"><span class="info-label">الاسم:</span> <span class="info-value" id="resultStudentName">-</span>
-      </div>
-     </div>
-     <div class="info-row">
-      <div class="info-item"><span class="info-label">المرحلة:</span> <span class="info-value" id="resultStage">-</span>
-      </div>
-      <div class="info-item"><span class="info-label">الفصل:</span> <span class="info-value" id="resultClass">-</span>
+      <div class="info-item">
+       <span class="info-label">الاسم:</span> <span class="info-value" id="resultStudentName">-</span>
       </div>
      </div>
      <div class="info-row">
-      <div class="info-item"><span class="info-label">رقم الهاتف:</span> <span class="info-value" id="resultPhone">-</span>
+      <div class="info-item">
+       <span class="info-label">المرحلة:</span> <span class="info-value" id="resultStage">-</span>
+      </div>
+      <div class="info-item">
+       <span class="info-label">الفصل:</span> <span class="info-value" id="resultClass">-</span>
+      </div>
+     </div>
+     <div class="info-row">
+      <div class="info-item">
+       <span class="info-label">رقم الهاتف:</span> <span class="info-value" id="resultPhone">-</span>
       </div>
      </div>
     </div><!-- Grades Table -->
@@ -575,7 +585,8 @@
        النسبة %
       </div>
      </div>
-     <div id="gradesTableBody"><!-- يتم ملء البيانات ديناميكياً -->
+     <div id="gradesTableBody">
+      <!-- يتم ملء البيانات ديناميكياً -->
      </div>
     </div><!-- Total Section -->
     <div class="total-section">
@@ -615,10 +626,10 @@
 
         // روابط ملفات CSV من Google Sheets
         const csvLinks = {
-            midterm1: 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=0',
-            term1: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=1381578766&single=true&output=csv',
-            midterm2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=763792200&single=true&output=csv',
-            term2: 'https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=3'
+            midterm1: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=0',
+            term1: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=763792200',
+            midterm2: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=763792200',
+            term2: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=1'
         };
 
         // ================================
@@ -645,15 +656,33 @@
             const lines = csvText.trim().split('\n');
             if (lines.length < 2) return [];
 
-            const headers = lines[0].split('\t').map(h => h.trim());
+            // محاولة تحديد الفاصل (Tab أو Comma)
+            let headers = [];
+            let delimiter = ',';
+            
+            // اختبار Tab أولاً
+            if (lines[0].includes('\t')) {
+                headers = lines[0].split('\t').map(h => h.trim());
+                delimiter = '\t';
+            } else {
+                headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                delimiter = ',';
+            }
+
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
                 if (lines[i].trim() === '') continue;
 
-                const values = lines[i].split('\t').map(v => v.trim());
-                const row = {};
+                let values;
+                if (delimiter === '\t') {
+                    values = lines[i].split('\t').map(v => v.trim());
+                } else {
+                    // معالجة خاصة للـ CSV مع قيم بين علامات اقتباس
+                    values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                }
 
+                const row = {};
                 headers.forEach((header, index) => {
                     row[header] = values[index] || '';
                 });
@@ -662,6 +691,9 @@
             }
 
             console.log('تم تحليل البيانات:', data.length, 'صف');
+            console.log('الرؤوس:', headers);
+            if (data.length > 0) console.log('أول صف:', data[0]);
+            
             return data;
         }
 
@@ -716,15 +748,51 @@
                 return;
             }
 
-            // البحث عن الطالب في البيانات المخزنة
-            const studentData = allResults[examType].find(
-                student => student['كود الدارس'] === studentCode
-            );
+            // تشخيص - طباعة أسماء الأعمدة والبيانات
+            console.log('=== تشخيص ===');
+            console.log('نوع الامتحان:', examType);
+            console.log('عدد السجلات المحملة:', allResults[examType].length);
+            if (allResults[examType].length > 0) {
+                console.log('أسماء الأعمدة الموجودة:', Object.keys(allResults[examType][0]));
+                console.log('أول 5 سجلات (أكوادهم):');
+                allResults[examType].slice(0, 5).forEach((record, i) => {
+                    const allValues = Object.values(record).map(v => String(v).trim()).filter(v => v);
+                    console.log(`  ${i + 1}. ${allValues.join(' | ')}`);
+                });
+            } else {
+                console.warn('⚠️ لا توجد بيانات محملة للامتحان المختار');
+            }
+
+            // البحث عن الطالب - تجربة عدة أسماء أعمدة ممكنة
+            let studentData = null;
+            const possibleCodeColumns = ['كود الدارس', 'Student Code', 'Code', 'الكود', 'كود'];
+            
+            for (let column of possibleCodeColumns) {
+                studentData = allResults[examType].find(
+                    student => student[column] && String(student[column]).trim() === studentCode
+                );
+                if (studentData) {
+                    console.log('✅ تم العثور على الطالب بالمفتاح:', column);
+                    break;
+                }
+            }
+
+            // إذا لم نجد بحث دقيق، حاول البحث الجزئي في جميع الأعمدة
+            if (!studentData) {
+                studentData = allResults[examType].find(student => {
+                    return Object.values(student).some(value => 
+                        String(value).trim() === studentCode
+                    );
+                });
+                if (studentData) {
+                    console.log('✅ تم العثور على الطالب ببحث عام في الأعمدة');
+                }
+            }
 
             if (studentData) {
                 displayResult(studentData);
             } else {
-                showError('لم يتم العثور على الطالب. يرجى التحقق من كود الطالب.');
+                showError('لم يتم العثور على الطالب. يرجى التحقق من كود الطالب. (افتح Console للمزيد من المعلومات)');
             }
         }
 
@@ -771,14 +839,19 @@
             document.getElementById('gradesTableBody').innerHTML = gradesHTML;
 
             // عرض المجموع والمتوسط من البيانات مباشرة
-            const totalScore = studentData['المجموع'] || '0';
-            const averageScore = studentData['النسبة المؤية'] || '0';
+            // التعامل مع حالات مختلفة من البيانات الفارغة
+            let totalScore = studentData['المجموع'] || studentData[' المجموع'] || '0';
+            let averageScore = studentData['النسبة المؤية'] || studentData[' النسبة المؤية'] || '0';
+            
+            // تنظيف البيانات من المسافات والرموز الزائدة
+            totalScore = String(totalScore).trim() === '' ? '0' : totalScore;
+            averageScore = String(averageScore).trim() === '' ? '0' : averageScore;
             
             document.getElementById('totalScore').textContent = totalScore;
             document.getElementById('averageScore').textContent = averageScore;
 
             // عرض التقدير النهائي
-            const finalRating = studentData['النتيجة النهائية'] || 'غير محدد';
+            const finalRating = studentData['النتيجة النهائية'] || studentData[' النتيجة النهائية'] || 'غير محدد';
             const ratingBadge = document.getElementById('ratingBadge');
             ratingBadge.textContent = finalRating;
             ratingBadge.className = `rating-badge ${getRatingClass(finalRating)}`;
@@ -900,5 +973,5 @@
             });
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcb675fb2da2d58',t:'MTc3MzU3NjUwOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcd1447a635b5f9',t:'MTc3MzU5NDA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
