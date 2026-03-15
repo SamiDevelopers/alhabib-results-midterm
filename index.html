@@ -3,975 +3,1049 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام عرض النتائج - مركز الحبيب للألحان والدراسات القبطية</title>
+  <title>نظام نتائج الطلاب</title><!-- SDK -->
+  <script src="/_sdk/element_sdk.js"></script><!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script><!-- Google Font - Noto Kufi Arabic for elegant Arabic typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"><!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        /* Header Styles */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: slideDown 0.6s ease-out;
-        }
-
-        header h1 {
-            color: white;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1em;
-        }
-
-        /* Search Card Styles */
-        .search-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-            font-size: 1em;
-        }
-
-        .form-group select,
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            text-align: right;
-        }
-
-        .form-group select:focus,
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* Button Styles */
-        .btn-search {
-            grid-column: 1 / -1;
-            padding: 14px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-search:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-search:active {
-            transform: translateY(0);
-        }
-
-        .btn-search:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-        }
-
-        .loading-screen.hidden {
-            display: none;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: white;
-            margin-top: 20px;
-            font-size: 1.1em;
-            text-align: center;
-        }
-
-        /* Result Card Styles */
-        .result-container {
-            display: none;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .result-container.show {
-            display: block;
-        }
-
-        .student-info {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-right: 5px solid #667eea;
-        }
-
-        .info-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 15px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #555;
-        }
-
-        .info-value {
-            color: #333;
-            font-weight: 500;
-        }
-
-        /* Grades Table */
-        .grades-table {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .table-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .table-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
-            align-items: center;
-            text-align: center;
-        }
-
-        .table-row:last-child {
-            border-bottom: none;
-        }
-
-        .table-row:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .grade-badge {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            color: white;
-            display: inline-block;
-            min-width: 60px;
-        }
-
-        .grade-subject-name {
-            text-align: right;
-            font-weight: 500;
-            color: #333;
-        }
-
-        /* Total Section */
-        .total-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .total-item h3 {
-            font-size: 0.95em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-
-        .total-item .value {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        /* Rating Badge */
-        .rating-badge {
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-size: 1.3em;
-            font-weight: 600;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .rating-excellent {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-
-        .rating-very-good {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-        }
-
-        .rating-good {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-        }
-
-        .rating-acceptable {
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
-            color: white;
-        }
-
-        .rating-weak {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-
-        /* Error Message */
-        .error-message {
-            background: #fee;
-            border-right: 5px solid #ef4444;
-            color: #c33;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            animation: slideDown 0.4s ease-out;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .error-message h3 {
-            margin-bottom: 10px;
-        }
-
-        /* Success Message */
-        .success-message {
-            background: #efe;
-            border-right: 5px solid #10b981;
-            color: #3c3;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            animation: slideDown 0.4s ease-out;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        /* Animations */
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;
-            }
-
-            header p {
-                font-size: 0.95em;
-            }
-
-            .search-card {
-                padding: 20px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .info-row {
-                grid-template-columns: 1fr;
-            }
-
-            .table-header,
-            .table-row {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 15px 10px;
-            }
-
-            .table-row {
-                gap: 10px;
-            }
-
-            .total-section {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .total-item .value {
-                font-size: 2em;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            header h1 {
-                font-size: 1.5em;
-            }
-
-            .search-card {
-                padding: 15px;
-            }
-
-            .form-group select,
-            .form-group input {
-                padding: 10px 12px;
-                font-size: 0.95em;
-            }
-
-            .btn-search {
-                padding: 12px 20px;
-                font-size: 1em;
-            }
-
-            .student-info {
-                padding: 15px;
-            }
-
-            .table-header,
-            .table-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .grade-badge,
-            .grade-subject-name {
-                font-size: 0.9em;
-            }
-
-            .total-item .value {
-                font-size: 1.8em;
-            }
-
-            .rating-badge {
-                font-size: 1.1em;
-                padding: 12px 15px;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            body {
-                background: white;
-            }
-
-            .search-card,
-            .btn-search,
-            .error-message {
-                display: none !important;
-            }
-
-            .student-info,
-            .grades-table,
-            .total-section,
-            .rating-badge {
-                box-shadow: none;
-                border: 1px solid #ddd;
-                page-break-inside: avoid;
-            }
-
-            header {
-                border-bottom: 2px solid #333;
-                margin-bottom: 20px;
-                padding-bottom: 10px;
-            }
-
-            header h1,
-            header p {
-                color: #000 !important;
-            }
-        }
-    </style>
+    /* ==============================
+       المتغيرات الأساسية للتصميم
+       ============================== */
+    :root {
+      --bg:        #f8fafc;
+      --surface:   #ffffff;
+      --card:      #f0f9ff;
+      --accent:    #667eea;
+      --accent2:   #764ba2;
+      --text:      #1e293b;
+      --text-muted:#64748b;
+      --success:   #10b981;
+      --danger:    #ef4444;
+      --border:    rgba(15,23,42,0.06);
+    }
+
+    /* ==============================
+       القواعد الأساسية للصفحة
+       ============================== */
+    html, body, #app-root {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    #app-root {
+      overflow-y: auto;
+    }
+
+    /* ==============================
+       خلفية الصفحة - طبقات متعددة
+       ============================== */
+    .page-bg {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(102,126,234,0.08), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(118,75,162,0.06), transparent),
+        var(--bg);
+      min-height: 100%;
+    }
+
+    /* ==============================
+       نمط الشبكة الخلفية الزخرفية
+       ============================== */
+    .page-bg::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(102,126,234,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102,126,234,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ==============================
+       بطاقة الحاوية الرئيسية
+       ============================== */
+    .main-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,146,42,0.1);
+    }
+
+    /* ==============================
+       شريط الرأس الذهبي
+       ============================== */
+    .header-bar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+      border-bottom: 2px solid var(--accent);
+      border-radius: 20px 20px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-bar::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #764ba2, #667eea, #764ba2, transparent);
+    }
+
+    /* ==============================
+       الحقول والـ Dropdown
+       ============================== */
+    .form-input {
+      background: rgba(255,255,255,0.95);
+      border: 1.5px solid rgba(102,126,234,0.2);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 15px;
+      padding: 12px 16px;
+      width: 100%;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+      background: rgba(255,255,255,1);
+    }
+
+    .form-input option {
+      background: #ffffff;
+      color: var(--text);
+    }
+
+    /* ==============================
+       زر البحث
+       ============================== */
+    .search-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 32px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.35);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .search-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(102,126,234,0.5);
+      filter: brightness(1.08);
+    }
+
+    .search-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .search-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* ==============================
+       شاشة التحميل
+       ============================== */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
+
+    .loading-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* حلقة التحميل الدوارة */
+    .spinner-ring {
+      width: 70px;
+      height: 70px;
+      border: 4px solid rgba(102,126,234,0.15);
+      border-top: 4px solid #667eea;
+      border-right: 4px solid #764ba2;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ==============================
+       بطاقات النتيجة
+       ============================== */
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .result-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    /* ==============================
+       شارات التقدير
+       ============================== */
+    .grade-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .grade-excellent  { background: rgba(16,185,129,0.15); color: #059669; border: 1px solid rgba(16,185,129,0.4); }
+    .grade-very-good  { background: rgba(59,130,246,0.15); color: #1d4ed8; border: 1px solid rgba(59,130,246,0.4); }
+    .grade-good       { background: rgba(102,126,234,0.15); color: #667eea; border: 1px solid rgba(102,126,234,0.4); }
+    .grade-pass       { background: rgba(245,158,11,0.15); color: #d97706; border: 1px solid rgba(245,158,11,0.4); }
+    .grade-fail       { background: rgba(239,68,68,0.15);  color: #dc2626;  border: 1px solid rgba(239,68,68,0.4); }
+    .grade-na         { background: rgba(100,116,139,0.1); color: var(--text-muted); border: 1px solid rgba(100,116,139,0.3); }
+
+    /* ==============================
+       رسالة الخطأ / النجاح
+       ============================== */
+    .alert-box {
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 15px;
+    }
+
+    .alert-error   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.4); color: #dc2626; }
+    .alert-warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.4); color: #d97706; }
+
+    /* ==============================
+       معلومات الطالب الشخصية
+       ============================== */
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(102,126,234,0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(102,126,234,0.12);
+    }
+
+    .info-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      min-width: 90px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ==============================
+       نتيجة المواد - شبكة
+       ============================== */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    /* ==============================
+       شريط النتيجة النهائية
+       ============================== */
+    .final-result-bar {
+      background: linear-gradient(135deg, rgba(240,249,255,0.8), rgba(240,245,250,0.8));
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-result-bar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #764ba2, #667eea);
+    }
+
+    /* ==============================
+       انيميشن ظهور النتائج
+       ============================== */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-up {
+      animation: slideUp 0.4s ease forwards;
+    }
+
+    .animate-up:nth-child(1) { animation-delay: 0.05s; }
+    .animate-up:nth-child(2) { animation-delay: 0.1s; }
+    .animate-up:nth-child(3) { animation-delay: 0.15s; }
+    .animate-up:nth-child(4) { animation-delay: 0.2s; }
+    .animate-up:nth-child(5) { animation-delay: 0.25s; }
+
+    /* ==============================
+       تحسينات الاستجابة للشاشات الصغيرة
+       ============================== */
+    @media (max-width: 640px) {
+      .main-card { border-radius: 14px; }
+      .subjects-grid { grid-template-columns: 1fr 1fr; }
+      .final-result-bar { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 400px) {
+      .subjects-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ==============================
+       Tooltip للـ مرحلة الطالب
+       ============================== */
+    .stage-badge {
+      background: rgba(102,126,234,0.18);
+      color: #667eea;
+      border: 1px solid rgba(102,126,234,0.4);
+      border-radius: 8px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ==============================
+       خط فاصل ذهبي
+       ============================== */
+    .gold-divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #667eea, transparent);
+      margin: 20px 0;
+    }
+
+    /* ==============================
+       مؤشر حالة الاتصال
+       ============================== */
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-online  { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .status-loading { background: #667eea;  box-shadow: 0 0 6px #667eea; animation: pulse 1s infinite; }
+    .status-error   { background: var(--danger);  box-shadow: 0 0 6px var(--danger); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ==============================
+       زخرفة الأيقونات الكنسية
+       ============================== */
+    .cross-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      line-height: 1;
+    }
+  </style>
   <style>body { box-sizing: border-box; }</style>
-  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
  </head>
  <body>
-  <!-- Loading Screen -->
-  <div id="loadingScreen" class="loading-screen">
-   <div>
-    <div class="spinner"></div>
-    <div class="loading-text">
-     جاري تحميل البيانات...
+  <!-- ==============================
+     شاشة التحميل الأولية
+     ============================== -->
+  <div class="loading-overlay" id="loadingOverlay">
+   <div class="spinner-ring mb-6"></div>
+   <p style="color: var(--accent2); font-size:18px; font-weight:700;" id="loadingText">جاري تحميل البيانات...</p>
+   <p style="color: var(--text-muted); font-size:13px; margin-top:8px;" id="loadingSubText">يرجى الانتظار</p>
+  </div><!-- ==============================
+     الحاوية الرئيسية للتطبيق
+     ============================== */
+<div class="page-bg" id="app-root">
+  <div style="position: relative; z-index: 1;" class="w-full">
+    <div class="w-full max-w-2xl mx-auto px-4 py-8">
+
+      <!-- ==============================
+           بطاقة التطبيق الرئيسية
+           ============================== -->
+  <div class="main-card">
+   <!-- رأس الصفحة -->
+   <div class="header-bar px-6 py-8 text-center">
+    <div class="cross-icon mb-3">
+     ☩
     </div>
-   </div>
-  </div>
-  <div class="container">
-   <!-- Header -->
-   <header>
-    <h1>🎓 نظام عرض النتائج</h1>
-    <p>مركز الحبيب للألحان والدراسات القبطية</p>
-   </header><!-- Search Section -->
-   <div class="search-card">
-    <div class="form-row">
-     <div class="form-group">
-      <label for="examType">نوع الامتحان</label> <select id="examType"> <option value="">-- اختر نوع الامتحان --</option> <option value="midterm1">نتيجة الميد ترم - الترم الأول - أكتوبر 2025</option> <option value="term1">نتيجة الترم الأول - ديسمبر 2025</option> <option value="midterm2">نتيجة الميد ترم - الترم الثاني - مارس 2026</option> <option value="term2">نتيجة الترم الثاني - مايو 2026</option> </select>
-     </div>
-     <div class="form-group">
-      <label for="studentCode">كود الطالب</label> <input type="text" id="studentCode" placeholder="أدخل كود الطالب" autocomplete="off">
-     </div>
-    </div><button class="btn-search" onclick="searchStudent()">🔍 عرض النتيجة</button>
-   </div><!-- Error Message -->
-   <div id="errorMessage" class="error-message">
-    <h3>⚠️ خطأ</h3>
-    <p id="errorText"></p>
-   </div><!-- Result Container -->
-   <div id="resultContainer" class="result-container">
-    <!-- Student Information -->
-    <div class="student-info">
-     <div class="info-row">
-      <div class="info-item">
-       <span class="info-label">كود الطالب:</span> <span class="info-value" id="resultStudentCode">-</span>
-      </div>
-      <div class="info-item">
-       <span class="info-label">الاسم:</span> <span class="info-value" id="resultStudentName">-</span>
-      </div>
-     </div>
-     <div class="info-row">
-      <div class="info-item">
-       <span class="info-label">المرحلة:</span> <span class="info-value" id="resultStage">-</span>
-      </div>
-      <div class="info-item">
-       <span class="info-label">الفصل:</span> <span class="info-value" id="resultClass">-</span>
-      </div>
-     </div>
-     <div class="info-row">
-      <div class="info-item">
-       <span class="info-label">رقم الهاتف:</span> <span class="info-value" id="resultPhone">-</span>
-      </div>
-     </div>
-    </div><!-- Grades Table -->
-    <div class="grades-table">
-     <div class="table-header">
-      <div>
-       المادة
-      </div>
-      <div>
-       الدرجة
-      </div>
-      <div>
-       التقدير
-      </div>
-      <div>
-       النسبة %
-      </div>
-     </div>
-     <div id="gradesTableBody">
-      <!-- يتم ملء البيانات ديناميكياً -->
-     </div>
-    </div><!-- Total Section -->
-    <div class="total-section">
-     <div class="total-item">
-      <h3>المجموع الكلي</h3>
-      <div class="value" id="totalScore">
-       0
-      </div>
-     </div>
-     <div class="total-item">
-      <h3>المتوسط</h3>
-      <div class="value" id="averageScore">
-       0
-      </div>
-     </div>
-    </div><!-- Rating Badge -->
-    <div id="ratingBadge" class="rating-badge rating-excellent">
-     ممتاز
+    <h1 id="center-name-el" style="font-size:26px; font-weight:800; color: var(--accent2); letter-spacing:0.5px; line-height:1.4;">المركز التعليمي</h1>
+    <p id="center-subtitle-el" style="color: var(--text-muted); font-size:14px; margin-top:6px;">نظام الاستعلام عن نتائج الدارسين</p><!-- مؤشر حالة الاتصال -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px;">
+     <span class="status-dot status-loading" id="statusDot"></span> <span style="font-size:12px; color: var(--text-muted);" id="statusText">جاري تحميل البيانات...</span>
     </div>
+   </div><!-- ==============================
+             نموذج البحث
+             ============================== -->
+   <div class="px-6 py-7">
+    <!-- اختيار نوع الامتحان -->
+    <div class="mb-5">
+     <label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="examSelect"> <i data-lucide="book-open" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> نوع الامتحان </label> <select class="form-input" id="examSelect"> <option value="midterm1">📋 نتيجة الميد ترم – الترم الأول – أكتوبر 2025</option> <option value="term1">📄 نتيجة الترم الأول – ديسمبر 2025</option> <option value="midterm2">📋 نتيجة الميد ترم – الترم الثاني – مارس 2026</option> <option value="term2">📄 نتيجة الترم الثاني – مايو 2026</option> </select>
+    </div><!-- إدخال كود الطالب -->
+    <div class="mb-6">
+     <label style="display:block; font-size:13px; color: var(--text-muted); font-weight:600; margin-bottom:8px;" for="studentCode"> <i data-lucide="id-card" style="width:14px; height:14px; display:inline; vertical-align:middle; margin-left:4px;"></i> كود الدارس </label> <input class="form-input" type="text" id="studentCode" placeholder="أدخل كود الدارس (مثال: OQ37UN53)" autocomplete="off" spellcheck="false" style="text-transform: uppercase; letter-spacing: 1px;">
+     <p style="font-size:12px; color: var(--text-muted); margin-top:6px; padding-right:4px;">أدخل الكود الموجود في بطاقة الدارس بالأحرف الكبيرة</p>
+    </div><!-- زر البحث --> <button class="search-btn w-full" id="searchBtn" onclick="handleSearch()"> <i data-lucide="search" style="width:18px; height:18px;"></i> <span id="search-btn-text">عرض النتيجة</span> </button> <!-- منطقة رسائل الخطأ / النتائج -->
+    <div id="resultArea" class="mt-6"></div>
+   </div><!-- نهاية نموذج البحث --> <!-- تذييل الصفحة -->
+   <div style="border-top: 1px solid var(--border); padding: 14px 24px; text-align:center;">
+    <p style="font-size:12px; color: var(--text-muted);">جميع البيانات سرية ومحمية • للاستفسار تواصل مع إدارة المركز</p>
    </div>
-  </div>
+  </div><!-- نهاية البطاقة الرئيسية --> <!-- نهاية الحاوية الرئيسية -->
   <script>
-        // ================================
-        // متغيرات عامة
-        // ================================
+/* ================================================================
+   ██████╗  █████╗ ████████╗ █████╗
+   ██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗
+   ██║  ██║███████║   ██║   ███████║
+   ██║  ██║██╔══██║   ██║   ██╔══██║
+   ██████╔╝██║  ██║   ██║   ██║  ██║
+   ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝
+   نظام نتائج الدارسين - المركز التعليمي
+   ================================================================ */
 
-        // تخزين جميع النتائج في الذاكرة (Caching)
-        let allResults = {
-            midterm1: [],
-            term1: [],
-            midterm2: [],
-            term2: []
-        };
+/* ================================================================
+   1. إعداد روابط Google Sheets بصيغة CSV
+   - كل رابط يشير إلى شيت مختلف (midterm1, term1, midterm2, term2)
+   - gid= رقم معرّف الشيت داخل ملف Google Sheets
+   - استبدل SPREADSHEET_ID بمعرف ملفك الفعلي
+   ================================================================ */
+const SHEET_URLS = {
+  midterm1: 'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=0',
+  term1:    'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=1',
+  midterm2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=763792200&single=true&output=csv',
+  term2:    'https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=3',
+};
 
-        // حالة تحميل البيانات
-        let dataLoaded = false;
+/* ================================================================
+   2. أسماء الأعمدة المتوقعة في كل شيت (بنفس الترتيب)
+   - الترتيب: كود الدارس، الاسم، المرحلة، الهاتف، الفصل،
+               الطقوس، المحفوظات، القبطي، الألحان، المجموع،
+               النسبة، النتيجة النهائية
+   ================================================================ */
+const COLUMNS = {
+  CODE:     0,   // كود الدارس
+  NAME:     1,   // اسم الدارس
+  STAGE:    2,   // المرحلة الدراسية
+  PHONE:    3,   // رقم الهاتف
+  CLASS:    4,   // الفصل
+  LITURGY:  5,   // الطقوس الكنسية
+  MEMORY:   6,   // المحفوظات والأجبية
+  COPTIC:   7,   // اللغة القبطية
+  HYMNS:    8,   // الألحان والتسبيحة
+  TOTAL:    9,   // المجموع
+  PERCENT:  10,  // النسبة المئوية
+  FINAL:    11,  // النتيجة النهائية
+};
 
-        // روابط ملفات CSV من Google Sheets
-        const csvLinks = {
-            midterm1: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=0',
-            term1: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=763792200',
-            midterm2: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTO_7x8ri8gn0SpiGZCnL8O-LP0IbF_E-uy22BXjTUm2qI4JhaBrYQXDRwV_tjUGfxIiFQ3iP9-auHZ/pub?gid=763792200&single=true&output=csv',
-            term2: 'https://docs.google.com/spreadsheets/d/14U1lCdCKydAB_lR750hFPpz3juVy1aeYRDfoxIVVoQg/export?format=csv&gid=1'
-        };
+/* ================================================================
+   3. كائن التخزين المؤقت للبيانات (Caching)
+   - يُخزَّن هنا جميع البيانات بعد التحميل الأولي
+   - لا يُعاد تحميل البيانات عند كل بحث
+   ================================================================ */
+const allResults = {
+  midterm1: [],
+  term1:    [],
+  midterm2: [],
+  term2:    [],
+};
 
-        // ================================
-        // دالة تحميل البيانات من CSV
-        // ================================
-        async function fetchCSVData(url) {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
-                const text = await response.text();
-                return parseCSV(text);
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-                throw error;
-            }
-        }
+/* ================================================================
+   4. متغير لتتبع حالة تحميل البيانات
+   ================================================================ */
+let dataLoaded  = false;
+let loadingError = false;
 
-        // ================================
-        // دالة تحليل بيانات CSV (محسّنة)
-        // ================================
-        function parseCSV(csvText) {
-            const lines = csvText.trim().split('\n');
-            if (lines.length < 2) return [];
+/* ================================================================
+   5. أسماء الامتحانات بالعربية (للعرض)
+   ================================================================ */
+const EXAM_NAMES = {
+  midterm1: 'نتيجة الميد ترم – الترم الأول – أكتوبر 2025',
+  term1:    'نتيجة الترم الأول – ديسمبر 2025',
+  midterm2: 'نتيجة الميد ترم – الترم الثاني – مارس 2026',
+  term2:    'نتيجة الترم الثاني – مايو 2026',
+};
 
-            // محاولة تحديد الفاصل (Tab أو Comma)
-            let headers = [];
-            let delimiter = ',';
-            
-            // اختبار Tab أولاً
-            if (lines[0].includes('\t')) {
-                headers = lines[0].split('\t').map(h => h.trim());
-                delimiter = '\t';
-            } else {
-                headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-                delimiter = ',';
-            }
+/* ================================================================
+   6. أسماء المواد الدراسية
+   ================================================================ */
+const SUBJECT_NAMES = {
+  LITURGY: 'الطقوس الكنسية',
+  MEMORY:  'المحفوظات والأجبية',
+  COPTIC:  'اللغة القبطية',
+  HYMNS:   'الألحان والتسبيحة',
+};
 
-            const data = [];
+/* ================================================================
+   7. أيقونات المواد الدراسية (Unicode Emoji)
+   ================================================================ */
+const SUBJECT_ICONS = {
+  LITURGY: '⛪',
+  MEMORY:  '📖',
+  COPTIC:  '𓂀',
+  HYMNS:   '🎵',
+};
 
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i].trim() === '') continue;
+/* ================================================================
+   8. دالة تحليل CSV إلى مصفوفة من الصفوف
+   - تتعامل مع الحقول المحاطة بعلامات اقتباس
+   - تتجاهل السطر الأول (العناوين)
+   ================================================================ */
+function parseCSV(csvText) {
+  // تقسيم النص إلى أسطر مع معالجة الأسطر الجديدة المختلفة
+  const lines = csvText.split(/\r?\n/);
+  const rows  = [];
 
-                let values;
-                if (delimiter === '\t') {
-                    values = lines[i].split('\t').map(v => v.trim());
-                } else {
-                    // معالجة خاصة للـ CSV مع قيم بين علامات اقتباس
-                    values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
-                }
+  // بدء من السطر الثاني (تجاهل عناوين الأعمدة)
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue; // تخطي الأسطر الفارغة
 
-                const row = {};
-                headers.forEach((header, index) => {
-                    row[header] = values[index] || '';
-                });
+    // تحليل الحقول المعقدة المحاطة بعلامات اقتباس
+    const fields = [];
+    let inQuote  = false;
+    let current  = '';
 
-                data.push(row);
-            }
+    for (let j = 0; j < line.length; j++) {
+      const ch = line[j];
+      if (ch === '"') {
+        inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        fields.push(current.trim());
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    fields.push(current.trim()); // إضافة الحقل الأخير
 
-            console.log('تم تحليل البيانات:', data.length, 'صف');
-            console.log('الرؤوس:', headers);
-            if (data.length > 0) console.log('أول صف:', data[0]);
-            
-            return data;
-        }
+    // إضافة الصف فقط إذا احتوى على بيانات
+    if (fields[COLUMNS.CODE] && fields[COLUMNS.CODE].length > 0) {
+      rows.push(fields);
+    }
+  }
+  return rows;
+}
 
-        // ================================
-        // دالة تهيئة البيانات عند فتح الصفحة
-        // ================================
-        async function initializeData() {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.classList.remove('hidden');
+/* ================================================================
+   9. دالة جلب وتحليل شيت واحد
+   - تُرجع مصفوفة من الصفوف أو مصفوفة فارغة عند الخطأ
+   ================================================================ */
+async function fetchSheet(key) {
+  const url = SHEET_URLS[key];
 
-            try {
-                // تحميل جميع الملفات بشكل متزامن
-                const results = await Promise.all([
-                    fetchCSVData(csvLinks.midterm1),
-                    fetchCSVData(csvLinks.term1),
-                    fetchCSVData(csvLinks.midterm2),
-                    fetchCSVData(csvLinks.term2)
-                ]);
+  // التحقق من وجود رابط حقيقي (مطلوب للإنتاج)
+  if (!url || url.includes('SPREADSHEET_ID')) {
+    console.warn(`[نظام النتائج] تحذير: رابط ${key} يحتاج إلى ضبط`);
+    return []; // إرجاع مصفوفة فارغة في وضع التطوير
+  }
 
-                // تخزين البيانات في الكائن allResults
-                allResults.midterm1 = results[0];
-                allResults.term1 = results[1];
-                allResults.midterm2 = results[2];
-                allResults.term2 = results[3];
+  try {
+    const response = await fetch(url, {
+      cache: 'no-cache', // تجنب التخزين المؤقت للمتصفح للبيانات الحساسة
+    });
 
-                dataLoaded = true;
-                loadingScreen.classList.add('hidden');
-                showMessage('success', 'تم تحميل البيانات بنجاح');
-            } catch (error) {
-                loadingScreen.classList.add('hidden');
-                showMessage('error', 'حدث خطأ في تحميل البيانات. تأكد من روابط CSV صحيحة.');
-                console.error('خطأ التهيئة:', error);
-            }
-        }
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: فشل جلب شيت ${key}`);
+    }
 
-        // ================================
-        // دالة البحث عن الطالب
-        // ================================
-        function searchStudent() {
-            // الحصول على القيم المدخلة
-            const examType = document.getElementById('examType').value;
-            const studentCode = document.getElementById('studentCode').value.trim();
+    const text = await response.text();
+    return parseCSV(text);
+  } catch (err) {
+    console.error(`[نظام النتائج] خطأ في جلب ${key}:`, err.message);
+    return []; // لا نوقف التطبيق بسبب شيت واحد فاشل
+  }
+}
 
-            // التحقق من صحة المدخلات
-            if (!examType) {
-                showError('يرجى اختيار نوع الامتحان');
-                return;
-            }
+/* ================================================================
+   10. دالة التحميل الرئيسية - تحمّل جميع الشيتات مرة واحدة
+   - تستخدم Promise.all لتحميل الكل بالتوازي
+   - تُحدّث مؤشر الحالة
+   ================================================================ */
+async function loadAllData() {
+  updateStatus('loading', 'جاري تحميل البيانات...');
+  document.getElementById('loadingText').textContent    = 'جاري تحميل بيانات النتائج...';
+  document.getElementById('loadingSubText').textContent = 'يتم الاتصال بقاعدة البيانات';
 
-            if (!studentCode) {
-                showError('يرجى إدخال كود الطالب');
-                return;
-            }
+  try {
+    // تحميل جميع الشيتات بالتوازي لأقصى سرعة
+    const [m1, t1, m2, t2] = await Promise.all([
+      fetchSheet('midterm1'),
+      fetchSheet('term1'),
+      fetchSheet('midterm2'),
+      fetchSheet('term2'),
+    ]);
 
-            // تشخيص - طباعة أسماء الأعمدة والبيانات
-            console.log('=== تشخيص ===');
-            console.log('نوع الامتحان:', examType);
-            console.log('عدد السجلات المحملة:', allResults[examType].length);
-            if (allResults[examType].length > 0) {
-                console.log('أسماء الأعمدة الموجودة:', Object.keys(allResults[examType][0]));
-                console.log('أول 5 سجلات (أكوادهم):');
-                allResults[examType].slice(0, 5).forEach((record, i) => {
-                    const allValues = Object.values(record).map(v => String(v).trim()).filter(v => v);
-                    console.log(`  ${i + 1}. ${allValues.join(' | ')}`);
-                });
-            } else {
-                console.warn('⚠️ لا توجد بيانات محملة للامتحان المختار');
-            }
+    // تخزين النتائج في الكائن العام
+    allResults.midterm1 = m1;
+    allResults.term1    = t1;
+    allResults.midterm2 = m2;
+    allResults.term2    = t2;
 
-            // البحث عن الطالب - تجربة عدة أسماء أعمدة ممكنة
-            let studentData = null;
-            const possibleCodeColumns = ['كود الدارس', 'Student Code', 'Code', 'الكود', 'كود'];
-            
-            for (let column of possibleCodeColumns) {
-                studentData = allResults[examType].find(
-                    student => student[column] && String(student[column]).trim() === studentCode
-                );
-                if (studentData) {
-                    console.log('✅ تم العثور على الطالب بالمفتاح:', column);
-                    break;
-                }
-            }
+    const total = m1.length + t1.length + m2.length + t2.length;
+    dataLoaded  = true;
+    loadingError = false;
 
-            // إذا لم نجد بحث دقيق، حاول البحث الجزئي في جميع الأعمدة
-            if (!studentData) {
-                studentData = allResults[examType].find(student => {
-                    return Object.values(student).some(value => 
-                        String(value).trim() === studentCode
-                    );
-                });
-                if (studentData) {
-                    console.log('✅ تم العثور على الطالب ببحث عام في الأعمدة');
-                }
-            }
+    // إظهار حالة النجاح
+    updateStatus('online', `جاهز • ${total} سجل محمّل`);
+    document.getElementById('loadingText').textContent    = 'تم تحميل البيانات بنجاح!';
+    document.getElementById('loadingSubText').textContent = `إجمالي ${total} سجل دارس`;
 
-            if (studentData) {
-                displayResult(studentData);
-            } else {
-                showError('لم يتم العثور على الطالب. يرجى التحقق من كود الطالب. (افتح Console للمزيد من المعلومات)');
-            }
-        }
+  } catch (err) {
+    // معالجة خطأ عام غير متوقع
+    loadingError = true;
+    updateStatus('error', 'تعذّر تحميل البيانات');
+    document.getElementById('loadingText').textContent    = 'حدث خطأ في التحميل';
+    document.getElementById('loadingSubText').textContent = err.message;
+  } finally {
+    // إخفاء شاشة التحميل بعد 800ms بغض النظر عن النتيجة
+    await delay(800);
+    fadeOutLoader();
+  }
+}
 
-        // ================================
-        // دالة عرض النتائج
-        // ================================
-        function displayResult(studentData) {
-            // إخفاء رسالة الخطأ
-            hideError();
+/* ================================================================
+   11. دوال مساعدة
+   ================================================================ */
 
-            // ملء البيانات الشخصية
-            document.getElementById('resultStudentCode').textContent = studentData['كود الدارس'] || '-';
-            document.getElementById('resultStudentName').textContent = studentData['اسم الدارس بالكامل'] || '-';
-            document.getElementById('resultStage').textContent = studentData['المرحلة الدراسية'] || '-';
-            document.getElementById('resultClass').textContent = studentData['الفصل داخل المركز'] || '-';
-            document.getElementById('resultPhone').textContent = studentData['رقم الهاتف'] || '-';
+// تأخير زمني (Promise-based)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-            // المواد والدرجات (التقديرات)
-            const subjects = [
-                { name: 'الطقوس الكنسية', key: 'الطقوس الكنسية' },
-                { name: 'المحفوظات والأجبية', key: 'المحفوظات والأجبية' },
-                { name: 'اللغة القبطية', key: 'اللغة القبطية' },
-                { name: 'الألحان والتسيحة', key: 'الألحان والتسيحة' }
-            ];
+// إخفاء شاشة التحميل بتأثير تلاشي
+function fadeOutLoader() {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('fade-out');
+  setTimeout(() => { overlay.style.display = 'none'; }, 650);
+}
 
-            // حساب المجموع والمتوسط
-            let gradesHTML = '';
+// تحديث مؤشر حالة الاتصال
+function updateStatus(type, message) {
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  dot.className  = `status-dot status-${type}`;
+  text.textContent = message;
+}
 
-            subjects.forEach(subject => {
-                const rating = studentData[subject.key] || '-';
-                const numericScore = ratingToScore(rating);
+/* ================================================================
+   12. دالة تحديد CSS class الخاصة بالتقدير
+   ================================================================ */
+function getGradeClass(grade) {
+  if (!grade || grade.trim() === '' || grade === '-') return 'grade-na';
 
-                gradesHTML += `
-                    <div class="table-row">
-                        <div class="grade-subject-name">${subject.name}</div>
-                        <div>${numericScore}</div>
-                        <div class="grade-badge" style="background: ${getGradeColor(rating)}">${rating}</div>
-                        <div>${numericScore}%</div>
-                    </div>
-                `;
-            });
+  const g = grade.trim();
+  // مطابقة التقديرات العربية والتقديرات الإنجليزية الشائعة
+  if (g.includes('ممتاز')       || g.toLowerCase().includes('excellent'))   return 'grade-excellent';
+  if (g.includes('جيد جداً')    || g.includes('جيد جدا')   || g.toLowerCase().includes('very good'))  return 'grade-very-good';
+  if (g.includes('جيد')         || g.toLowerCase().includes('good'))         return 'grade-good';
+  if (g.includes('مقبول')       || g.toLowerCase().includes('pass'))         return 'grade-pass';
+  if (g.includes('ضعيف')        || g.toLowerCase().includes('fail'))         return 'grade-fail';
+  // أي تقدير آخر
+  return 'grade-na';
+}
 
-            // ملء جدول الدرجات
-            document.getElementById('gradesTableBody').innerHTML = gradesHTML;
+/* ================================================================
+   13. دالة البحث الرئيسية
+   - تُفعَّل عند ضغط زر "عرض النتيجة"
+   ================================================================ */
+function handleSearch() {
+  const resultArea  = document.getElementById('resultArea');
+  const examKey     = document.getElementById('examSelect').value;
+  const rawCode     = document.getElementById('studentCode').value;
+  const studentCode = rawCode.trim().toUpperCase(); // تنظيف الكود ورفعه لأحرف كبيرة
 
-            // عرض المجموع والمتوسط من البيانات مباشرة
-            // التعامل مع حالات مختلفة من البيانات الفارغة
-            let totalScore = studentData['المجموع'] || studentData[' المجموع'] || '0';
-            let averageScore = studentData['النسبة المؤية'] || studentData[' النسبة المؤية'] || '0';
-            
-            // تنظيف البيانات من المسافات والرموز الزائدة
-            totalScore = String(totalScore).trim() === '' ? '0' : totalScore;
-            averageScore = String(averageScore).trim() === '' ? '0' : averageScore;
-            
-            document.getElementById('totalScore').textContent = totalScore;
-            document.getElementById('averageScore').textContent = averageScore;
+  // --------- التحقق من صحة المدخلات ---------
 
-            // عرض التقدير النهائي
-            const finalRating = studentData['النتيجة النهائية'] || studentData[' النتيجة النهائية'] || 'غير محدد';
-            const ratingBadge = document.getElementById('ratingBadge');
-            ratingBadge.textContent = finalRating;
-            ratingBadge.className = `rating-badge ${getRatingClass(finalRating)}`;
+  // منع البحث بكود فارغ
+  if (!studentCode) {
+    showAlert(resultArea, 'error', 'الرجاء إدخال كود الدارس أولاً', 'يوجد عدة أحرف وأرقام في البطاقة الشخصية للدارس.');
+    document.getElementById('studentCode').focus();
+    return;
+  }
 
-            // عرض منطقة النتائج
-            document.getElementById('resultContainer').classList.add('show');
+  // منع البحث قبل اكتمال تحميل البيانات
+  if (!dataLoaded) {
+    showAlert(resultArea, 'warning', 'لا تزال البيانات تُحمَّل...', 'يرجى الانتظار حتى يكتمل التحميل ثم المحاولة مرة أخرى.');
+    return;
+  }
 
-            // تمرير التركيز للنتائج
-            setTimeout(() => {
-                document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
-            }, 100);
-        }
+  // التحقق من وجود بيانات للامتحان المختار
+  const sheetData = allResults[examKey];
+  if (!sheetData || sheetData.length === 0) {
+    showAlert(resultArea, 'warning', 'لا تتوفر بيانات لهذا الامتحان حالياً',
+      'قد يكون الامتحان لم يُعقد بعد أو لم يُرفع ملف البيانات. تواصل مع إدارة المركز.');
+    return;
+  }
 
-        // ================================
-        // دالة تحويل التقدير النصي إلى درجة رقمية
-        // ================================
-        function ratingToScore(rating) {
-            const ratingMap = {
-                'ممتاز': 95,
-                'جيد جدا': 85,
-                'جيد جداً': 85,
-                'جيد': 75,
-                'مقبول': 60,
-                'ضعيف': 40,
-                '-': 0
-            };
-            return ratingMap[rating] || 0;
-        }
+  // --------- البحث في البيانات ---------
+  // البحث بمطابقة تامة للكود (Case-insensitive)
+  const studentRow = sheetData.find(
+    row => row[COLUMNS.CODE] &&
+           row[COLUMNS.CODE].trim().toUpperCase() === studentCode
+  );
 
-        // ================================
-        // دالة حساب التقدير بناءً على الدرجة
-        // ================================
-        function calculateRating(score) {
-            const numScore = parseFloat(score);
+  if (!studentRow) {
+    // لم يُعثر على الطالب
+    showAlert(resultArea, 'error',
+      `لم يُعثر على دارس بكود: ${studentCode}`,
+      `تأكد من صحة الكود المُدخَل أو من اختيار نوع الامتحان الصحيح. إذا استمرت المشكلة، تواصل مع إدارة المركز.`
+    );
+    return;
+  }
 
-            if (numScore >= 85) return 'ممتاز';
-            if (numScore >= 75) return 'جيد جداً';
-            if (numScore >= 65) return 'جيد';
-            if (numScore >= 50) return 'مقبول';
-            return 'ضعيف';
-        }
+  // --------- عرض نتيجة الطالب ---------
+  displayResult(resultArea, studentRow, examKey);
+}
 
-        // ================================
-        // دالة الحصول على لون التقدير
-        // ================================
-        function getGradeColor(rating) {
-            const colors = {
-                'ممتاز': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                'جيد جدا': 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                'جيد جداً': 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                'جيد': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                'مقبول': 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
-                'ضعيف': 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                '-': '#999999'
-            };
-            return colors[rating] || '#999999';
-        }
+/* ================================================================
+   14. دالة عرض رسائل التنبيه (خطأ / تحذير)
+   ================================================================ */
+function showAlert(container, type, title, detail) {
+  const iconName  = type === 'error' ? 'circle-x' : 'triangle-alert';
+  const cssClass  = type === 'error' ? 'alert-error' : 'alert-warning';
 
-        // ================================
-        // دالة الحصول على فئة التقدير
-        // ================================
-        function getRatingClass(rating) {
-            const classes = {
-                'ممتاز': 'rating-excellent',
-                'جيد جدا': 'rating-very-good',
-                'جيد جداً': 'rating-very-good',
-                'جيد': 'rating-good',
-                'مقبول': 'rating-acceptable',
-                'ضعيف': 'rating-weak',
-                'غير محدد': 'rating-excellent'
-            };
-            return classes[rating] || 'rating-excellent';
-        }
+  container.innerHTML = `
+    <div class="alert-box ${cssClass} animate-up">
+      <div style="flex-shrink:0; margin-top:2px;">
+        <i data-lucide="${iconName}" style="width:20px; height:20px;"></i>
+      </div>
+      <div>
+        <p style="font-weight:700; font-size:15px; margin-bottom:4px;">${title}</p>
+        <p style="font-size:13px; opacity:0.85; line-height:1.7;">${detail}</p>
+      </div>
+    </div>
+  `;
+  lucide.createIcons(); // إعادة تهيئة الأيقونات بعد تحديث DOM
+}
 
-        // ================================
-        // دالة عرض الأخطاء
-        // ================================
-        function showError(message) {
-            const errorContainer = document.getElementById('errorMessage');
-            const errorText = document.getElementById('errorText');
-            errorText.textContent = message;
-            errorContainer.classList.add('show');
+/* ================================================================
+   15. دالة عرض بيانات الطالب ونتيجته
+   ================================================================ */
+function displayResult(container, row, examKey) {
+  // استخراج البيانات من الصف
+  const name    = row[COLUMNS.NAME]    || '—';
+  const stage   = row[COLUMNS.STAGE]   || '—';
+  const phone   = row[COLUMNS.PHONE]   || '—';
+  const cls     = row[COLUMNS.CLASS]   || '—';
+  const liturgy = row[COLUMNS.LITURGY] || '—';
+  const memory  = row[COLUMNS.MEMORY]  || '—';
+  const coptic  = row[COLUMNS.COPTIC]  || '—';
+  const hymns   = row[COLUMNS.HYMNS]   || '—';
+  const total   = row[COLUMNS.TOTAL]   || '';
+  const percent = row[COLUMNS.PERCENT] || '';
+  const final   = row[COLUMNS.FINAL]   || '';
 
-            // إخفاء النتائج
-            document.getElementById('resultContainer').classList.remove('show');
+  // تحديد أكلاس التقدير النهائي لتمييز الشريط الأخير
+  const finalClass = getGradeClass(final);
 
-            // إخفاء الرسالة بعد 5 ثوان
-            setTimeout(() => {
-                errorContainer.classList.remove('show');
-            }, 5000);
-        }
+  // بناء HTML النتيجة
+  container.innerHTML = `
+    <!-- قسم البيانات الشخصية -->
+    <div class="result-card animate-up mb-4">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <div style="width:40px; height:40px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <i data-lucide="user" style="width:20px; height:20px; color:#0f1b2d;"></i>
+        </div>
+        <div>
+          <p style="font-size:11px; color: var(--text-muted); margin-bottom:2px;">اسم الدارس</p>
+          <p style="font-size:17px; font-weight:800; color: var(--accent2);">${escapeHtml(name)}</p>
+        </div>
+        <div style="margin-right:auto;">
+          <span class="stage-badge">${escapeHtml(stage)}</span>
+        </div>
+      </div>
 
-        // ================================
-        // دالة إخفاء الأخطاء
-        // ================================
-        function hideError() {
-            document.getElementById('errorMessage').classList.remove('show');
-        }
+      <hr class="gold-divider" />
 
-        // ================================
-        // دالة عرض الرسائل
-        // ================================
-        function showMessage(type, message) {
-            console.log(`[${type}] ${message}`);
-        }
+      <!-- معلومات شخصية -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+        <div class="info-row">
+          <i data-lucide="hash" style="width:14px; height:14px; color: var(--accent); flex-shrink:0;"></i>
+          <span class="info-label">الكود</span>
+          <span class="info-value" style="color: var(--accent2); font-family:monospace; letter-spacing:1px;">${escapeHtml(row[COLUMNS.CODE] || '')}</span>
+        </div>
+        <div class="info-row">
+          <i data-lucide="phone" style="width:14px; height:14px; color: var(--accent); flex-shrink:0;"></i>
+          <span class="info-label">الهاتف</span>
+          <span class="info-value" style="direction:ltr; text-align:left;">${escapeHtml(phone)}</span>
+        </div>
+        <div class="info-row" style="grid-column: 1/-1;">
+          <i data-lucide="door-open" style="width:14px; height:14px; color: var(--accent); flex-shrink:0;"></i>
+          <span class="info-label">الفصل</span>
+          <span class="info-value">${escapeHtml(cls)}</span>
+        </div>
+        <div class="info-row" style="grid-column: 1/-1;">
+          <i data-lucide="file-text" style="width:14px; height:14px; color: var(--accent); flex-shrink:0;"></i>
+          <span class="info-label">الامتحان</span>
+          <span class="info-value" style="font-size:13px;">${EXAM_NAMES[examKey]}</span>
+        </div>
+      </div>
+    </div>
 
-        // ================================
-        // معالج المفتاح Enter
-        // ================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // تحميل البيانات عند فتح الصفحة
-            initializeData();
+    <!-- قسم نتائج المواد -->
+    <div class="result-card animate-up mb-4">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+        <i data-lucide="bar-chart-2" style="width:18px; height:18px; color: var(--accent);"></i>
+        <p style="font-size:15px; font-weight:700; color: var(--text);">نتائج المواد الدراسية</p>
+      </div>
 
-            // السماح بالبحث عند الضغط على Enter
-            document.getElementById('studentCode').addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    searchStudent();
-                }
-            });
-        });
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcd1447a635b5f9',t:'MTc3MzU5NDA3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+      <div class="subjects-grid">
+        ${buildSubjectCard('LITURGY', liturgy)}
+        ${buildSubjectCard('MEMORY',  memory)}
+        ${buildSubjectCard('COPTIC',  coptic)}
+        ${buildSubjectCard('HYMNS',   hymns)}
+      </div>
+    </div>
+
+    <!-- شريط النتيجة النهائية -->
+    ${buildFinalBar(final, finalClass, total, percent)}
+  `;
+
+  // إعادة تهيئة أيقونات Lucide بعد تحديث DOM
+  lucide.createIcons();
+}
+
+/* ================================================================
+   16. دالة بناء بطاقة مادة دراسية واحدة
+   ================================================================ */
+function buildSubjectCard(subjectKey, grade) {
+  const gradeClass   = getGradeClass(grade);
+  const displayGrade = (grade && grade !== '—' && grade.trim() !== '') ? grade.trim() : 'لم يُسجَّل';
+
+  return `
+    <div style="
+      background: rgba(15,27,45,0.6);
+      border: 1px solid rgba(200,146,42,0.15);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      transition: all 0.2s;
+    ">
+      <div style="font-size:22px; margin-bottom:8px;">${SUBJECT_ICONS[subjectKey]}</div>
+      <p style="font-size:12px; color: var(--text-muted); margin-bottom:10px; line-height:1.5;">${SUBJECT_NAMES[subjectKey]}</p>
+      <span class="grade-badge ${gradeClass}">${escapeHtml(displayGrade)}</span>
+    </div>
+  `;
+}
+
+/* ================================================================
+   17. دالة بناء شريط النتيجة النهائية
+   ================================================================ */
+function buildFinalBar(finalGrade, finalClass, total, percent) {
+  const displayFinal = (finalGrade && finalGrade.trim() !== '') ? finalGrade.trim() : 'لم تُحدَّد';
+  const hasTotal   = total && total.trim() !== '';
+  const hasPercent = percent && percent.trim() !== '';
+
+  return `
+    <div class="final-result-bar animate-up">
+      <div>
+        <p style="font-size:12px; color: var(--text-muted); margin-bottom:6px;">
+          <i data-lucide="award" style="width:13px; height:13px; display:inline; vertical-align:middle; margin-left:4px;"></i>
+          التقدير العام للدارس
+        </p>
+        <span class="grade-badge ${finalClass}" style="font-size:16px; padding: 8px 24px;">
+          ${escapeHtml(displayFinal)}
+        </span>
+      </div>
+      ${(hasTotal || hasPercent) ? `
+      <div style="text-align:left; direction:ltr;">
+        ${hasPercent ? `<p style="font-size:24px; font-weight:800; color: var(--accent2);">${escapeHtml(percent)}</p><p style="font-size:11px; color: var(--text-muted);">النسبة المئوية</p>` : ''}
+        ${hasTotal   ? `<p style="font-size:14px; color: var(--text-muted); margin-top:4px;">المجموع: <strong style="color: var(--text);">${escapeHtml(total)}</strong></p>` : ''}
+      </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+/* ================================================================
+   18. دالة تنظيف HTML لمنع XSS
+   ================================================================ */
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#039;');
+}
+
+/* ================================================================
+   19. إضافة دعم ضغط Enter على حقل الكود
+   ================================================================ */
+document.getElementById('studentCode').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    handleSearch();
+  }
+});
+
+/* ================================================================
+   20. تنظيف الكود تلقائياً عند الكتابة (رفع الأحرف)
+   ================================================================ */
+document.getElementById('studentCode').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  this.setSelectionRange(pos, pos);
+});
+
+/* ================================================================
+   21. تهيئة Element SDK لدعم لوحة التحرير
+   ================================================================ */
+window.elementSdk && window.elementSdk.init({
+  defaultConfig: {
+    center_name:        'المركز التعليمي',
+    center_subtitle:    'نظام الاستعلام عن نتائج الدارسين',
+    search_button_text: 'عرض النتيجة',
+    // ألوان التطبيق الأساسية
+    background_color:   '#0f1b2d',
+    surface_color:      '#1e3050',
+    text_color:         '#e8dcc8',
+    accent_color:       '#c8922a',
+    muted_color:        '#8a9bb8',
+    // خط
+    font_family: 'Noto Kufi Arabic',
+    font_size:   15,
+  },
+
+  /* تحديث الواجهة عند تغيير الإعدادات */
+  onConfigChange: async (config) => {
+    const def = window.elementSdk.config; // الـ default
+
+    // تحديث نص العناوين
+    document.getElementById('center-name-el').textContent    = config.center_name        || def.center_name;
+    document.getElementById('center-subtitle-el').textContent = config.center_subtitle   || def.center_subtitle;
+    document.getElementById('search-btn-text').textContent   = config.search_button_text || def.search_button_text;
+
+    // تطبيق الألوان على المتغيرات CSS
+    const root = document.documentElement;
+    root.style.setProperty('--bg',          config.background_color || def.background_color);
+    root.style.setProperty('--card',        config.surface_color    || def.surface_color);
+    root.style.setProperty('--text',        config.text_color       || def.text_color);
+    root.style.setProperty('--accent',      config.accent_color     || def.accent_color);
+    root.style.setProperty('--text-muted',  config.muted_color      || def.muted_color);
+
+    // تطبيق الخط على كل عناصر الصفحة
+    const fontFamily = config.font_family || def.font_family;
+    const fontSize   = config.font_size   || def.font_size;
+    document.body.style.fontFamily = `'${fontFamily}', 'Noto Kufi Arabic', sans-serif`;
+    document.body.style.fontSize   = `${fontSize}px`;
+  },
+
+  /* تعريف إمكانيات إعادة التلوين والخط */
+  mapToCapabilities: (config) => {
+    const def = {
+      background_color: '#0f1b2d',
+      surface_color:    '#1e3050',
+      text_color:       '#e8dcc8',
+      accent_color:     '#c8922a',
+      muted_color:      '#8a9bb8',
+      font_family:      'Noto Kufi Arabic',
+      font_size:        15,
+    };
+    return {
+      recolorables: [
+        {
+          get: () => config.background_color || def.background_color,
+          set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); },
+        },
+        {
+          get: () => config.surface_color || def.surface_color,
+          set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); },
+        },
+        {
+          get: () => config.text_color || def.text_color,
+          set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); },
+        },
+        {
+          get: () => config.accent_color || def.accent_color,
+          set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); },
+        },
+        {
+          get: () => config.muted_color || def.muted_color,
+          set: (v) => { config.muted_color = v; window.elementSdk.setConfig({ muted_color: v }); },
+        },
+      ],
+      borderables: [],
+      fontEditable: {
+        get: () => config.font_family || def.font_family,
+        set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); },
+      },
+      fontSizeable: {
+        get: () => config.font_size || def.font_size,
+        set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); },
+      },
+    };
+  },
+
+  /* ربط قيم لوحة التحرير بمفاتيح الـ config */
+  mapToEditPanelValues: (config) => new Map([
+    ['center_name',        config.center_name        || 'المركز التعليمي'],
+    ['center_subtitle',    config.center_subtitle    || 'نظام الاستعلام عن نتائج الدارسين'],
+    ['search_button_text', config.search_button_text || 'عرض النتيجة'],
+  ]),
+});
+
+/* ================================================================
+   22. نقطة الانطلاق - تحميل البيانات عند فتح الصفحة
+   ================================================================ */
+loadAllData();
+
+/* تهيئة أيقونات Lucide */
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcd4424858b2d58',t:'MTc3MzU5NjAzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
